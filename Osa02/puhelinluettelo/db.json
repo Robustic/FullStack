@@ -24,6 +24,16 @@
       "name": "Uusi Nimi",
       "number": "123-456789",
       "id": 5
+    },
+    {
+      "name": "Toinen Nimi",
+      "number": "987-654321",
+      "id": 6
+    },
+    {
+      "name": "Kolmas Tyyppi",
+      "number": "312-452345",
+      "id": 7
     }
   ]
 }
