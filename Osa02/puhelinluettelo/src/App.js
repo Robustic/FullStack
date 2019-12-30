@@ -1,10 +1,14 @@
 import React, { useState, useEffect } from 'react'
-import axios from 'axios'
 import personService from './services/persons'
 
 const Person = (props) => {
     return (
-        <p>{props.name} {props.number}</p>
+        <p>
+            <span>{props.name} {props.number}&nbsp;</span>
+            <button onClick={() => props.handleDelete(props.id, props.name, props.setPersons)}>
+                Delete contact
+            </button>
+        </p>
     )
 }
 
@@ -49,13 +53,16 @@ const PersonForm = (props) => {
 const Persons = (props) => {
     const filteredPersons = props.persons.filter(person =>
         (person.name.toLowerCase().includes(props.filter.toLowerCase()))
-    )
+    )    
 
     const rows = () => filteredPersons.map(person =>
         <Person
             key={person.name}
             name={person.name}
             number={person.number}
+            handleDelete={props.handleDelete}
+            setPersons={props.setPersons}
+            id={person.id}
         />
     )
     return (
@@ -103,6 +110,21 @@ const App = () => {
         }
     }
 
+    const handleDelete = (id, name, setPersons) => {
+        console.log('Yritit tehdä deleten kohteelle ' + id)
+        if (window.confirm(`Delete contact ${name} ?`)) {
+            personService
+                .deleteOne(id)
+            setPersons(persons.filter(person => person.id !== id))
+            // personService
+            //     .getAll()
+            //     .then(allPersons => {
+            //         console.log('Määrä on taalla')
+            //         setPersons(allPersons)
+            //     })            
+        }
+    }
+
     const handleNameChange = (event) => {
         setNewName(event.target.value)
     }
@@ -134,6 +156,8 @@ const App = () => {
             <Persons
                 persons={persons}
                 filter={filter}
+                handleDelete={handleDelete}
+                setPersons={setPersons}
             />
         </div>
     )
