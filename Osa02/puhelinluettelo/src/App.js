@@ -88,9 +88,18 @@ const App = () => {
 
     const addPerson = (event) => {
         event.preventDefault()
-        const nameExists = persons.filter(person => (person.name === newName))
-        if (nameExists.length > 0) {
-            window.alert(`${newName} is already added to phonebook`);
+        const personExistsList = persons.filter(person => (person.name === newName))
+        if (personExistsList.length > 0) {
+            const personExists = personExistsList[0]
+            const id = personExists.id
+            const updatePersonObject = { ...personExists, number: newNumber }
+            personService
+                .update(id, updatePersonObject)
+                .then(returnedPerson => {
+                    setPersons(persons.map(person => person.id !== id ? person : returnedPerson))
+                    setNewName('')
+                    setNewNumber('')
+                })
         } else if (newName.length === 0) {
             window.alert(`name is empty`);
         } else if (newNumber.length === 0) {
@@ -110,18 +119,11 @@ const App = () => {
         }
     }
 
-    const handleDelete = (id, name, setPersons) => {
-        console.log('Yritit tehdä deleten kohteelle ' + id)
+    const handleDelete = (id, name, setPersons) => {        
         if (window.confirm(`Delete contact ${name} ?`)) {
             personService
                 .deleteOne(id)
-            setPersons(persons.filter(person => person.id !== id))
-            // personService
-            //     .getAll()
-            //     .then(allPersons => {
-            //         console.log('Määrä on taalla')
-            //         setPersons(allPersons)
-            //     })            
+            setPersons(persons.filter(person => person.id !== id))          
         }
     }
 
