@@ -17,7 +17,7 @@ const update = (id, newObject) => {
 }
 
 const deleteOne = (id) => {
-    axios.delete(`${baseUrl}/${id}`)
+    return axios.delete(`${baseUrl}/${id}`)
 }
 
 export default {

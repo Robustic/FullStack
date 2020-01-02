@@ -53,7 +53,7 @@ const PersonForm = (props) => {
 const Persons = (props) => {
     const filteredPersons = props.persons.filter(person =>
         (person.name.toLowerCase().includes(props.filter.toLowerCase()))
-    )    
+    )
 
     const rows = () => filteredPersons.map(person =>
         <Person
@@ -72,11 +72,57 @@ const Persons = (props) => {
     )
 }
 
+const MessageSuccess = ({ message }) => {
+    if (message === null) {
+        return null
+    }
+
+    const messageStyle = {
+        color: 'green',
+        background: 'lightgrey',
+        fontSize: 20,
+        borderStyle: 'solid',
+        borderRadius: 5,
+        padding: 10,
+        marginBottom: 10
+    }
+
+    return (
+        <div style={messageStyle}>
+            {message}
+        </div>
+    )
+}
+
+const MessageError = ({ errorMessage }) => {
+    if (errorMessage === null) {
+        return null
+    }
+
+    const errorMessageStyle = {
+        color: 'red',
+        background: 'lightgrey',
+        fontSize: 20,
+        borderStyle: 'solid',
+        borderRadius: 5,
+        padding: 10,
+        marginBottom: 10
+    }
+
+    return (
+        <div style={errorMessageStyle}>
+            {errorMessage}
+        </div>
+    )
+}
+
 const App = () => {
     const [persons, setPersons] = useState([])
     const [newName, setNewName] = useState('')
     const [newNumber, setNewNumber] = useState('')
     const [filter, setFilter] = useState('')
+    const [message, setMessage] = useState(null)
+    const [errorMessage, setErrorMessage] = useState(null)
 
     useEffect(() => {
         personService
@@ -97,6 +143,10 @@ const App = () => {
                 .update(id, updatePersonObject)
                 .then(returnedPerson => {
                     setPersons(persons.map(person => person.id !== id ? person : returnedPerson))
+                    setMessage(`Updated number for '${returnedPerson.name}'`)
+                    setTimeout(() => {
+                        setMessage(null)
+                    }, 5000)
                     setNewName('')
                     setNewNumber('')
                 })
@@ -113,17 +163,34 @@ const App = () => {
                 .create(personObject)
                 .then(returnedPerson => {
                     setPersons(persons.concat(returnedPerson))
+                    setMessage(`Added '${returnedPerson.name}'`)
+                    setTimeout(() => {
+                        setMessage(null)
+                    }, 5000)
                     setNewName('')
                     setNewNumber('')
                 })
         }
     }
 
-    const handleDelete = (id, name, setPersons) => {        
+    const handleDelete = (id, name, setPersons) => {
         if (window.confirm(`Delete contact ${name} ?`)) {
             personService
                 .deleteOne(id)
-            setPersons(persons.filter(person => person.id !== id))          
+                .then(error => {
+                    setPersons(persons.filter(person => person.id !== id))
+                    setMessage(`Deleted '${name}'`)
+                    setTimeout(() => {
+                        setMessage(null)
+                    }, 5000)
+                })
+                .catch(error => {
+                    setErrorMessage(`Information of '${name}' has already been removed from server`)
+                    setTimeout(() => {
+                        setErrorMessage(null)
+                    }, 5000)
+                    setPersons(persons.filter(person => person.id !== id))
+                })
         }
     }
 
@@ -155,6 +222,12 @@ const App = () => {
                 handleNumberChange={handleNumberChange}
             />
             <h3>Numbers</h3>
+            <MessageSuccess
+                message={message}
+            />
+            <MessageError
+                errorMessage={errorMessage}
+            />
             <Persons
                 persons={persons}
                 filter={filter}
