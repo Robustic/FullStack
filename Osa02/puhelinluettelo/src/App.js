@@ -150,6 +150,12 @@ const App = () => {
                     setNewName('')
                     setNewNumber('')
                 })
+                .catch(error => {
+                    setErrorMessage(error.response.data.error)
+                    setTimeout(() => {
+                        setErrorMessage(null)
+                    }, 5000)
+                })
         } else if (newName.length === 0) {
             window.alert(`name is empty`);
         } else if (newNumber.length === 0) {
@@ -169,6 +175,12 @@ const App = () => {
                     }, 5000)
                     setNewName('')
                     setNewNumber('')
+                })
+                .catch(error => {
+                    setErrorMessage(error.response.data.error)
+                    setTimeout(() => {
+                        setErrorMessage(null)
+                    }, 5000)
                 })
         }
     }
