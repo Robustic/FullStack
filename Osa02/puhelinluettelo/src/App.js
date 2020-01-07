@@ -189,7 +189,7 @@ const App = () => {
         if (window.confirm(`Delete contact ${name} ?`)) {
             personService
                 .deleteOne(id)
-                .then(error => {
+                .then(() => {
                     setPersons(persons.filter(person => person.id !== id))
                     setMessage(`Deleted '${name}'`)
                     setTimeout(() => {
